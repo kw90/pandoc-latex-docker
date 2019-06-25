@@ -14,3 +14,4 @@ COPY entrypoint.sh /entrypoint.sh
 ENV OUTPUT_FILENAME "readme"
 
 ENTRYPOINT ["sh", "/entrypoint.sh"]
+

@@ -43,13 +43,15 @@ export HOST_USER
 export HOST_UID
 
 # all our targets are phony (no files to check).
-.PHONY: pull remove slides prune
+.PHONY: build remove slides watch
+
+.INTERMEDIATE: remove
 
 # suppress makes own output
 #.SILENT:
 
 slides:
-	pull
+	build
 ifeq ($(strip $(FILE_ARGUMENTS)),)
 	# no command is given, give default run command
 	docker run --name pandoc-latex --volume `pwd`:/data -e OUTPUT_FILENAME=$(PROJECT_NAME) kw90/pandoc-latex:latest
@@ -63,7 +65,7 @@ help:
 	@echo ''
 	@echo 'Usage: make [TARGET] [EXTRA_ARGUMENTS]'
 	@echo 'Targets:'
-	@echo '  pull       pull docker container update (if available)'
+	@echo '  build      run docker build command for container'
 	@echo '  slides     run pandoc-latex --container-- for current dir and README.md file'
 	@echo '             Takes extra argument `file` to indicate a input file for conversion'
 	@echo '             Use make slides file="input.md" or make file="input.md" to generate input.pdf'
@@ -76,11 +78,22 @@ help:
 	@echo 'user=:	make shell user=root (no need to set uid=0)'
 @echo 'uid=:	make shell user=dummy uid=4000 (defaults to 0 if user= set)'
 
-pull:
-	docker pull kw90/pandoc-latex:latest
+watch:
+	@echo $@
+	-docker run --name pandoc-latex -dt --entrypoint "/bin/sh" --volume `pwd`:/data kw90/pandoc-latex:latest:latest
+ifeq ($(strip $(FILE_ARGUMENTS)),)
+	# no filename given, give default project name and use README.md
+	docker exec pandoc-latex watchexec -e md -r "pandoc -t beamer README.md -o $(PROJECT_NAME).pdf"
+else
+	# run with given filename and output $(FILE_ARGUMENTS).pdf
+	docker exec pandoc-latex watchexec -e md -r "pandoc -t beamer $(FILE_ARGUMENTS).md -o $(FILE_ARGUMENTS).pdf"
+endif
+
+build:
+	docker build -t pandoc-latex .
 
 remove:
-	docker rm pandoc-latex
+	docker stop pandoc-latex && docker rm pandoc-latex
 
 prune:
 	docker system prune -a

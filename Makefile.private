@@ -43,7 +43,9 @@ export HOST_USER
 export HOST_UID
 
 # all our targets are phony (no files to check).
-.PHONY: build remove slides
+.PHONY: build remove slides watch
+
+.INTERMEDIATE: remove
 
 # suppress makes own output
 #.SILENT:
@@ -76,11 +78,22 @@ help:
 	@echo 'user=:	make shell user=root (no need to set uid=0)'
 @echo 'uid=:	make shell user=dummy uid=4000 (defaults to 0 if user= set)'
 
+watch:
+	@echo $@
+	-docker run --name pandoc-latex -dt --entrypoint "/bin/sh" --volume `pwd`:/data pandoc-latex:latest
+ifeq ($(strip $(FILE_ARGUMENTS)),)
+	# no filename given, give default project name and use README.md
+	docker exec pandoc-latex watchexec -e md -r "pandoc -t beamer README.md -o $(PROJECT_NAME).pdf"
+else
+	# run with given filename and output $(FILE_ARGUMENTS).pdf
+	docker exec pandoc-latex watchexec -e md -r "pandoc -t beamer $(FILE_ARGUMENTS).md -o $(FILE_ARGUMENTS).pdf"
+endif
+
 build:
 	docker build -t pandoc-latex .
 
 remove:
-	docker rm pandoc-latex
+	docker stop pandoc-latex && docker rm pandoc-latex
 
 prune:
 	docker system prune -a
