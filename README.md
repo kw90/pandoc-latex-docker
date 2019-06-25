@@ -23,8 +23,7 @@ docker build -t pandoc-latex .
 Login to registry and pull container using
 
 ```zsh
-docker login -u <USER> -p <PASSWORD> repohub.enterpriselab.ch:5002
-docker pull repohub.enterpriselab.ch:5002/kawa/pandoc-latex:latest
+docker pull kw90/pandoc-latex:latest
 ```
 
 ### Generate LaTeX Beamer PDF from README.md
