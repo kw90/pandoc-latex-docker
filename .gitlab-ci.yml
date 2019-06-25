@@ -1,0 +1,19 @@
+stages:
+- push
+
+services:
+- docker:dind
+
+push:
+  image: docker:latest
+  stage: push
+  script:
+    - docker info
+    - docker login -u "${EL_REGISTRY_USER}" -p "${EL_REGISTRY_PASSWORD}" repohub.enterpriselab.ch:5002
+    - docker build -t pandoc-latex:latest .
+    - docker tag pandoc-latex repohub.enterpriselab.ch:5002/kawa/pandoc-latex:latest
+    - docker push repohub.enterpriselab.ch:5002/kawa/pandoc-latex:latest
+    - docker login -u "${DOCKERHUB_USER}" -p "${DOCKERHUB_PASSWORD}"
+    - docker tag pandoc-latex "${DOCKERHUB_USER}"/pandoc-latex:latest
+    - docker push "${DOCKERHUB_USER}"/pandoc-latex:latest
+
