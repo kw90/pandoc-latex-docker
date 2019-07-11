@@ -18,7 +18,7 @@ ADD plantuml.jar /opt/plantuml/
 # Create Entrypoint Command
 COPY entrypoint.sh /entrypoint.sh
 
-ENV PLANTUML_BIN "java -jar /opt/plantuml/plantuml.jar"
+ENV PLANTUML_BIN "java -jar /opt/plantuml/plantuml.jar -tsvg"
 ENV OUTPUT_FILENAME "readme"
 
 ENTRYPOINT ["sh", "/entrypoint.sh"]
