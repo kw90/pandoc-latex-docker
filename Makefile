@@ -1,3 +1,4 @@
+
 # --------------------------------------------------------------------
 # Copyright (c) 2019 Saarbrücken, Germany. All Rights Reserved.
 # Author(s): Kai Waelti
@@ -51,7 +52,6 @@ export HOST_UID
 #.SILENT:
 
 slides:
-	build
 ifeq ($(strip $(FILE_ARGUMENTS)),)
 	# no command is given, give default run command
 	docker run --name pandoc-latex --volume `pwd`:/data -e OUTPUT_FILENAME=$(PROJECT_NAME) kw90/pandoc-latex:latest
@@ -80,17 +80,26 @@ help:
 
 watch:
 	@echo $@
-	-docker run --name pandoc-latex -dt --entrypoint "/bin/sh" --volume `pwd`:/data kw90/pandoc-latex:latest:latest
+	-docker run --name pandoc-latex -dt --entrypoint "/bin/sh" --volume `pwd`:/data kw90/pandoc-latex:latest
 ifeq ($(strip $(FILE_ARGUMENTS)),)
 	# no filename given, give default project name and use README.md
-	docker exec pandoc-latex watchexec -e md -r "pandoc -t beamer README.md -o $(PROJECT_NAME).pdf"
+	docker exec pandoc-latex watchexec -e md -r "pandoc -t beamer README.md -o $(PROJECT_NAME).pdf --filter pandoc-plantuml"
 else
 	# run with given filename and output $(FILE_ARGUMENTS).pdf
-	docker exec pandoc-latex watchexec -e md -r "pandoc -t beamer $(FILE_ARGUMENTS).md -o $(FILE_ARGUMENTS).pdf"
+	docker exec pandoc-latex watchexec -e md -r "pandoc -t beamer $(FILE_ARGUMENTS).md -o $(FILE_ARGUMENTS).pdf --filter pandoc-plantuml"
 endif
 
-build:
-	docker build -t pandoc-latex .
+page:
+	@echo $@
+	-docker run --name pandoc-latex -dt --entrypoint "/bin/sh" --volume `pwd`:/data kw90/pandoc-latex:latest
+ifeq ($(strip $(FILE_ARGUMENTS)),)
+	# no filename given, give default project name and use README.md
+	docker exec pandoc-latex pandoc -t revealjs -s -o public/index.html --filter pandoc-plantuml -V theme=night -V revealjs-url=./reveal.js README.md
+else
+	# run with given filename and output $(FILE_ARGUMENTS).pdf
+	docker exec pandoc-latex pandoc -t revealjs -s -o public/index.html --filter pandoc-plantuml -V theme=night -V revealjs-url=./reveal.js $(FILE_ARGUMENTS).md
+endif
+	mv plantuml-images public/
 
 remove:
 	docker stop pandoc-latex && docker rm pandoc-latex
