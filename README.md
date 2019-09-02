@@ -1,5 +1,4 @@
-# Container for converting Markdown to LaTeX Beamer PDF files for quick
-presentations
+# Container for converting Markdown to LaTeX Beamer PDF files for quick presentations
 
 ## Getting started
 
