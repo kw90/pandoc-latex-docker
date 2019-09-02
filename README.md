@@ -7,7 +7,7 @@
 Clone the Repository and enter the directory
 
 ```zsh
-git clone https://gitlab.enterpriselab.ch/mt-kawa/mt-docs/pandoc-latex-docker.git
+git clone https://github.com/kw90/pandoc-latex-docker.git
 cd pandoc-latex-docker
 ```
 
