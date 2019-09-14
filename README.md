@@ -1,8 +1,10 @@
-# Container for converting Markdown to LaTeX Beamer PDF files for quick presentations
+# Convert Markdown to Nearly Every Format
 
-## Getting started
+This container converts easy-to-read and -write Markdown to nearly every thinkable format (best used for presentations or documentations).
 
-### Build container yourself
+## Getting Started
+
+### Build Container Yourself
 
 Clone the Repository and enter the directory
 
@@ -17,7 +19,7 @@ Build container using docker command
 docker build -t pandoc-latex .
 ```
 
-### Pull container from registry
+### Pull Container from Registry
 
 Login to registry and pull container using
 
@@ -30,6 +32,13 @@ docker pull kw90/pandoc-latex:latest
 Simply run `make slides` to generate a PDF from README.md called $DIRNAME.pdf. To change the input file and rename the output accordingly use the command `make file="INPUT.md"`. Use `make remove` and `make prune` to remove unused containers, images and volumes.
 
 > **_NOTE:  In order to use the provided `Makefile` a recent `make` installation is required. For Debian distributions installing `build-essentials` is the easiest (e.g. `sudo apt-get install build-essentials` on Ubuntu). Installation from source can be done by reading through the README of the tarball downloaded from the [GNU Make Manual](https://www.gnu.org/software/make/manual/)._**
+
+### Watch for Changes and Update on Save
+
+The container comes with `watchexec`, which watches filetypes for changes. By default - as defined in the Makefile - it will just watch `.md` for changes. If a Markdown file is saved with changes, the `pandoc` command is triggered, updating the output file. 
+
+To start watching a Markdown file in your project path, simply execute `make watch`, which will always generate an updated pdf of the modified and saved Markdown.
+
 
 #### Without Make
 
